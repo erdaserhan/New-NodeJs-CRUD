@@ -57,6 +57,7 @@ exports.register = (req,res) => {
         // Hashage du mot de passe
         const salt = genSaltSync(10);
         console.log("Mot de passe, AVANT hashage : "+lemotdepasse);
+        // On change lemotdepasse avec lemotdepasse hashé
         lemotdepasse = hashSync(lemotdepasse,salt);
         console.log("Mot de passe, APRES hashage : "+lemotdepasse);
 
@@ -69,7 +70,8 @@ exports.register = (req,res) => {
 
         // Rechercher si l'e-mail n'est pas déjà enregistré
         User.getUserByEmail(unUser.email, (err,data)=>{
-            console.log(`User.getUserByEmail : ${err}`);
+            console.log(`User.getUserByEmail : ` +JSON.stringify(err));
+            console.log(`User.getUserByEmail : ` +JSON.stringify(data));
             if (err) {
                 console.log("Email inconnu");
                 if (err.type === "ERR_NOT_FOUND"){
@@ -89,8 +91,10 @@ exports.register = (req,res) => {
                     });
                 }
             } else {
-                console.log("Email connu - Données : "+data);
-                if (data.nom == lenom) {
+                console.log("Email connu - Données : "+JSON.stringify(data.nom));
+                console.log(lenom);
+                console.log(lemail);
+                if (data.nom == lenom || data.email == lemail) {
                     console.log(`${data.nom} est déjà enregistré avec cet e-mail !`);
                     res.status(500).send({
                         title: "Erreur 500 pendant getUserByEmail", message: "Déjà enregistré avec cet e-mail !"
